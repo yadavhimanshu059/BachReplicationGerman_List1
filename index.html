@@ -169,13 +169,19 @@
             max: 9,
             start: 5,
             step: 0.001,
-            data : {stimulus: temp_prac, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: plist[j][2], Item_ID : plist[j][0], Condition_ID : plist[j][1], List_ID : plist[j][4]}
+            data : {stimulus: temp_prac, correct_choice: 0, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: plist[j][2], Item_ID : plist[j][0], Condition_ID : plist[j][1], List_ID : plist[j][4]}
         }
         var prac_right = plist[j][6]
         var prac_false1 = plist[j][7]
         var prac_false2 = plist[j][8]
         var prac_false3 = plist[j][9]
         var shuffled_prac_alter = shuffle([prac_right,prac_false1,prac_false2,prac_false3],1)
+        var corr_choice = 0
+        for(c=0;c<4;c++){
+          if(shuffled_prac_alter[c]==prac_right){
+            corr_choice = c
+          }
+        }
         var question_practice = {
             type: "html-button-response",
             stimulus: '<p style="font-size:10px' + font_size + 'px; color:  ' + color + ' ;">' + 'Welche der vier Aussagen ist richtig? <br> <br>' + '</p>',
@@ -183,17 +189,22 @@
             margin_vertical: '20px',
             margin_horizontal: '300px',
             post_trial_gap: 500,
-            data : {stimulus:shuffled_prac_alter, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: plist[j][2], Item_ID : plist[j][0], Condition_ID : plist[j][1], List_ID : plist[j][4]}
+            data : {stimulus:shuffled_prac_alter, correct_choice : corr_choice, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: plist[j][2], Item_ID : plist[j][0], Condition_ID : plist[j][1], List_ID : plist[j][4]},
+            // on_finish: function(data){
+            //   // Score the response as correct or incorrect.
+            //   if(jsPsych.pluginAPI.compareKeys(data.response, corr_choice)){
+            //     data.correct = true;
+            //   } else {
+            //     data.correct = false;
+            //   }
+            // }
         }
-
-        //var pract_response = question_practice.response;
-        //var feed=pract_response;
         var feed="Falsche Antwort!";
-        // if(String.fromCharCode(data_from_current_node.response.button)==prac_right){
-        //     feed="Richtige Antwort!"
-        // } else {
-        //     feed="Falsche Antwort!"
-        // }
+        if(jsPsych.pluginAPI.compareKeys(jsPsych.data.get().response, jsPsych.data.get().correct_choice)){
+           feed="Richtige Antwort!"
+        } else {
+           feed="Falsche Antwort!"
+        }
 
         var feedback = {
           type: "html-button-response",
@@ -204,7 +215,7 @@
         //timeline.push(fixation);
         timeline.push(trial_p3);
         timeline.push(question_practice);
-        //timeline.push(feedback);
+        timeline.push(feedback);
     }
 
     var endtraining = {
@@ -229,7 +240,7 @@
                 max: 9,
                 start: 5,
                 step: 0.001,
-                data : {stimulus: templist, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list[j][2], Item_ID : list[j][0], Condition_ID : list[j][1], List_ID : list[j][4]}
+                data : {stimulus: templist, correct_choice: 0, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list[j][2], Item_ID : list[j][0], Condition_ID : list[j][1], List_ID : list[j][4]}
             }
 
             var temp_right = list[j][6]
@@ -237,13 +248,19 @@
             var temp_false2 = list[j][8]
             var temp_false3 = list[j][9]
             var shuffled_alternatives = shuffle([temp_right,temp_false1,temp_false2,temp_false3],1)
+            var corr_choice = 0
+            for(c=0;c<4;c++){
+              if(shuffled_alternatives[c]==temp_right){
+                corr_choice = c
+              }
+            }
             var question_trial = {
                 type: "html-button-response",
                 stimulus: '<p style="font-size:10px' + font_size + 'px; color:  ' + color + ' ;">' + 'Welche der vier Aussagen ist richtig? <br> <br>' + '</p>',
                 choices: shuffled_alternatives,
                 margin_vertical: '20px',
                 margin_horizontal: '300px',
-                data : {stimulus:shuffled_alternatives, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list[j][2], Item_ID : list[j][0], Condition_ID : list[j][1], List_ID : list[j][4]},
+                data : {stimulus:shuffled_alternatives, correct_choice: corr_choice, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list[j][2], Item_ID : list[j][0], Condition_ID : list[j][1], List_ID : list[j][4]},
                 post_trial_gap: 500
             }
 
@@ -289,7 +306,7 @@
               choices: [templist[0],"Weiß nicht / Gleich gut",templist[1]],
               margin_vertical: '50px',
               margin_horizontal: '300px',
-              data : {stimulus: templist[0]+' '+templist[1], Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list_pres[j][2], Item_ID : list_pres[j][3], List_ID : condnew},
+              data : {stimulus: templist[0]+' '+templist[1], correct_choice: 0, Particpant_id:participant_id, Entry_Number: entry_number,  Experiment_ID: list_pres[j][2], Item_ID : list_pres[j][3], List_ID : condnew},
               post_trial_gap: 500
           }
           timeline.push(trial_prestudy);
